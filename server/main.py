@@ -1,38 +1,21 @@
 import socket
 
-my_name = 'user1'.encode()
+_server_address = ('localhost', 8686)
 
-sock = socket.socket()
+server_socket = socket.socket()
+server_socket.bind(_server_address)
+server_socket.listen(1)
+print('server is running, please, press ctrl+c to stop')
 
-sock.bind(('', 9090))
-sock.listen(1)
 
-print('connected')
-
-conn_global, adr_global = sock.accept()
-
-user_name = conn_global.recv(1024)
-
-conn_global.close()
-
-print(user_name.decode())
-
-sock_user = socket.socket()
-sock_user.connect(('localhost', 9091))
-
-sock_user.send(my_name)
 
 while True:
-    conn, adr = sock.accept()
+    connection, address = server_socket.accept()
+    data = connection.recv(1024)
+    print('user2: ' + data.decode())
 
-    while True:
-        data = conn.recv(1024)
-        if not data:
-            break
-        data = data.decode()
-        print(user_name + ': ' + data)
+    text = input('user1: ')
 
-    conn.close()
+    connection.send(text.encode())
 
-    text = input().encode()
-    sock.send(text)
+    connection.close()
